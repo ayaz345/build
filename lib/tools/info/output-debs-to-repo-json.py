@@ -37,7 +37,7 @@ def generate_deb_summary(info):
 		artifact_type = out["artifact_type"]
 		artifact_version = out["artifact_version"]
 
-		if not (artifact_type == "deb" or artifact_type == "deb-tar"):
+		if artifact_type not in ["deb", "deb-tar"]:
 			continue
 
 		all_debs: dict[str, dict] = {}
@@ -53,7 +53,7 @@ def generate_deb_summary(info):
 			continue
 
 		# Sanity check: artifact_map_debs_keys and artifact_map_packages_keys should be the same
-		if not (artifact_map_debs_keys == artifact_map_packages_keys):
+		if artifact_map_debs_keys != artifact_map_packages_keys:
 			log.error(f"Error: artifact {artifact_id} has different keys in the map: {artifact}")
 			continue
 
@@ -73,10 +73,7 @@ def generate_deb_summary(info):
 				repo_target = f'armbian-{first_part}'
 			all_debs[key] = {"relative_deb_path": relative_deb_path, "package_name": (artifact_map_packages_values[i]), "repo_target": repo_target}
 
-		# Aggregate all repo_targets from their debs. There can be only one. Eg: each artifact can only be in one repo_target, no matter how many debs.
-		repo_targets = set()
-		for key in all_debs:
-			repo_targets.add(all_debs[key]["repo_target"])
+		repo_targets = {value["repo_target"] for value in all_debs.values()}
 		if len(repo_targets) > 1:
 			log.error(f"Error: artifact {artifact_id} has debs in different repo_targets: {artifact}")
 			continue

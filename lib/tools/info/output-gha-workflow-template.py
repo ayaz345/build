@@ -107,7 +107,7 @@ for template_file in template_files:
 	}
 
 	# all 'config' dict on top, for common things re-used everywhere
-	context.update(config)
+	context |= config
 
 	out += f"\n# template file: {template_file}\n\n"
 

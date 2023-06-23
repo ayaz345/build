@@ -120,9 +120,7 @@ class BaseWorkflowJob:
 		return condition
 
 	def render_yaml(self) -> dict[str, object]:
-		job: dict[str, object] = {}
-		job["name"] = self.job_name
-
+		job: dict[str, object] = {"name": self.job_name}
 		if len(self.envs) > 0:
 			job["env"] = self.envs
 
@@ -161,16 +159,14 @@ class WorkflowFactory:
 		return self.jobs[job_id]
 
 	def render_yaml(self) -> dict[str, object]:
-		gha_workflow: dict[str, object] = dict()
-		gha_workflow["name"] = "build-targets"
-		gha_workflow["on"] = {"workflow_dispatch": {}}
+		gha_workflow: dict[str, object] = {
+			"name": "build-targets",
+			"on": {"workflow_dispatch": {}},
+		}
 		gha_workflow["on"]["workflow_call"] = {}
 		# trigger when pushed to. wtf...
 		gha_workflow["on"]["push"] = {"branches": ["main"], "paths": [".github/workflows/build-targets.yaml"]}
 
-		jobs = {}  # @TODO: maybe sort... maybe prepare...
-		for job in self.jobs.values():
-			jobs[job.job_id] = job.render_yaml()
-
+		jobs = {job.job_id: job.render_yaml() for job in self.jobs.values()}
 		gha_workflow["jobs"] = jobs
 		return gha_workflow

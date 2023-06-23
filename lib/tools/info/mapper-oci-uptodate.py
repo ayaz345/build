@@ -29,11 +29,11 @@ oras.logger.setup_logger(quiet=(not armbian_utils.is_debug()), debug=(armbian_ut
 # Prepare Armbian cache
 armbian_paths = armbian_utils.find_armbian_src_path()
 cache_dir = armbian_paths["armbian_src_path"] + "/cache"
-oci_cache_dir_positive = cache_dir + "/oci/positive"
+oci_cache_dir_positive = f"{cache_dir}/oci/positive"
 os.makedirs(oci_cache_dir_positive, exist_ok=True)
 oci_cache_dir_positive = os.path.abspath(oci_cache_dir_positive)
 
-oci_cache_dir_negative = cache_dir + "/oci/negative"
+oci_cache_dir_negative = f"{cache_dir}/oci/negative"
 os.makedirs(oci_cache_dir_negative, exist_ok=True)
 oci_cache_dir_negative = os.path.abspath(oci_cache_dir_negative)
 
@@ -157,8 +157,7 @@ for target in targets:
 
 # run through the targets and see if they are up-to-date.
 oci_infos = []
-for oci_target in oci_target_map:
-	orig_target = oci_target_map[oci_target]
+for oci_target, orig_target in oci_target_map.items():
 	orig_target["oci"] = {}
 	orig_target["oci"] = check_oci_up_to_date_cache(oci_target, check_oci)
 	oci_infos.append(orig_target)

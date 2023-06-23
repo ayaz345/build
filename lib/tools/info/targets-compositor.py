@@ -84,8 +84,7 @@ for target_name in targets["targets"]:
 	if "items" in target_obj:
 		for item in target_obj["items"]:
 			if isinstance(item, list):
-				for item_item in item:
-					all_items.append(item_item)
+				all_items.extend(iter(item))
 			else:
 				all_items.append(item)
 
@@ -107,10 +106,10 @@ for target_name in targets["targets"]:
 		# loop over the items
 		for item in all_items:
 			one_invocation_vars = {}
-			one_invocation_vars.update(one_expansion["vars"])
+			one_invocation_vars |= one_expansion["vars"]
 			one_invocation_vars.update(item)
 			# Special case for BETA, read this from TARGETS_BETA environment and force it.
-			one_invocation_vars.update({"BETA": os.environ.get("TARGETS_BETA", "")})
+			one_invocation_vars["BETA"] = os.environ.get("TARGETS_BETA", "")
 			expanded = {"vars": one_invocation_vars, "configs": one_expansion["configs"], "pipeline": one_expansion["pipeline"]}
 			invocations_dict.append(expanded)
 
@@ -127,12 +126,9 @@ if len(invocations_dict) != len(invocations_unique):
 	log.warning(f"Duplicate invocations found, de-duped from {len(invocations_dict)} to {len(invocations_unique)}")
 
 all_invocations = list(invocations_unique.values())
-counter = 1
-for one_invocation in all_invocations:
+for counter, one_invocation in enumerate(all_invocations, start=1):
 	# target_id is the counter left-padded with zeros to 10 digits, plus the total number of invocations, left-padded with zeros to 10 digits.
 	one_invocation["target_id"] = f"{counter:010d}" + f"{len(all_invocations):010d}"
-	counter += 1
-
 # dump invocation list as json
 invocations_json = json.dumps(all_invocations, indent=4, sort_keys=True)
 print(invocations_json)

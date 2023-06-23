@@ -52,9 +52,7 @@ def download_using_armbian(exec_cmd: list[str], params: dict):
 		if result.stderr:
 			logs = armbian_utils.parse_log_lines_from_stderr(result.stderr)
 
-	info = {"in": params, "download_ok": True}
-	info["logs"] = logs
-	return info
+	return {"in": params, "download_ok": True, "logs": logs}
 
 
 # This is called like this:

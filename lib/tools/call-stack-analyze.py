@@ -50,9 +50,7 @@ def get_group_from_filename(file):
 
 def prepare_file_for_screen(file):
 	# if it starts with "lib/functions/", remove that
-	if file.startswith("lib/functions/"):
-		return file[14:]
-	return file
+	return file[14:] if file.startswith("lib/functions/") else file
 
 
 def cleanup_filename(filename, common_prefix):
